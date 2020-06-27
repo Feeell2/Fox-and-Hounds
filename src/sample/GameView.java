@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -8,22 +9,32 @@ import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class GameView extends Application {
     private BoardSquare [][] fields;
+    PawnPos pos;
+
+    GameModel gameModel;
     public static void main(String[] args) {
         GameView.launch(args);
     }
     @Override
     public void start(Stage stage) throws Exception{
       fields=new BoardSquare[8][8];
+      gameModel=new GameModel(this,fields);
       Scene scane= new Scene(createView(),600,600);
         stage.setTitle("Fox and Hounds");
         stage.setScene(scane);
         stage.show();
+
+    }
+    public BoardSquare[][] getFields() {
+        return fields;
     }
     private VBox createView(){
         VBox mainView=new VBox();
@@ -59,21 +70,23 @@ public class GameView extends Application {
             constrains.setPercentWidth(100/8);
             board.getColumnConstraints().add(constrains);
         }
+        gameModel.initGamePawnPosition(fields);
+        gameModel.addListener();
         return board;
     }
     private StackPane createBoardSquare(int row, int col){
         if (row%2==0){
             if(col%2==0){
-                fields[row][col]=new BoardSquare(Color.BLACK);
+                fields[row][col]=new BoardSquare(Color.BLACK,gameModel);
             }else{
-                fields[row][col]=new BoardSquare(Color.GREEN);
+                fields[row][col]=new BoardSquare(Color.GREEN,gameModel);
             }
 
         }else {
             if(col%2!=0){
-                fields[row][col]=new BoardSquare(Color.BLACK);
+                fields[row][col]=new BoardSquare(Color.BLACK,gameModel);
             }else{
-                fields[row][col]=new BoardSquare(Color.GREEN);
+                fields[row][col]=new BoardSquare(Color.GREEN,gameModel);
             }
         }
 
